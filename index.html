@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Code Lab – 4.2 Kod Arahan HTML (1 Amanah)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"Fira Code"', 'monospace'],
+                    },
+                    colors: {
+                        lab: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .code-textarea {
+            tab-size: 2;
+            white-space: pre;
+            word-break: normal;
+            overflow-wrap: normal;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-modal, #certificate-modal * {
+                visibility: visible;
+            }
+            #certificate-modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                color: black;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- HEADER UTAMA -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo & Tajuk -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-tr from-sky-500 to-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-sky-500/20">
+                        <i class="fa-solid fa-code text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg text-white flex items-center gap-2">
+                            HTML Code Lab
+                            <span class="bg-sky-500/20 text-sky-300 text-xs px-2.5 py-0.5 rounded-full border border-sky-500/30">4.2 Kod Arahan HTML</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 font-medium">ASK Tingkatan 1 – Class 1 Amanah</p>
+                    </div>
+                </div>
+
+                <button onclick="resetAllProgress()" class="md:hidden text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 hover:bg-rose-500/20 transition">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+
+            <!-- Profil Murid & Progress Global -->
+            <div class="flex flex-wrap items-center justify-between md:justify-end gap-4 w-full md:w-auto">
+                <!-- Input Nama Murid -->
+                <div class="flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 flex-1 md:flex-none">
+                    <i class="fa-solid fa-user-graduate text-sky-400 text-sm"></i>
+                    <label for="student-name" class="text-xs text-slate-400 whitespace-nowrap hidden sm:inline">Nama Murid:</label>
+                    <input type="text" id="student-name" placeholder="Masukkan nama anda..." 
+                           class="bg-transparent text-xs font-semibold text-sky-200 focus:outline-none w-full md:w-48 placeholder-slate-600"
+                           oninput="saveStudentName(this.value)">
+                </div>
+
+                <!-- Modul Progress -->
+                <div class="flex items-center space-x-3 bg-slate-950 px-4 py-1.5 rounded-xl border border-slate-800">
+                    <div class="text-right">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">🚀 Progress Pembelajaran</div>
+                        <div class="text-xs font-bold text-sky-400" id="progress-text-summary">0 / 9 Topik Selesai</div>
+                    </div>
+                    <div class="w-24 bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700">
+                        <div id="progress-bar-fill" class="bg-gradient-to-r from-sky-500 to-indigo-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <span id="progress-percent" class="text-xs font-extrabold text-indigo-300 w-8 text-right">0%</span>
+                </div>
+
+                <!-- Butang Reset Progress -->
+                <button onclick="resetAllProgress()" title="Reset Keseluruhan Progress" class="hidden md:flex bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-500/30 px-3 py-2 rounded-xl text-xs font-medium items-center gap-1.5 transition">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span>Reset Progress</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- SIDEBAR NAVIGATION TOPIK -->
+        <aside class="lg:col-span-3 space-y-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+                    <h2 class="font-bold text-xs uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-sky-400"></i> Senarai Topik HTML
+                    </h2>
+                    <span class="text-[10px] bg-slate-800 text-sky-400 font-mono px-2 py-0.5 rounded-full border border-slate-700">9 Topik</span>
+                </div>
+
+                <nav id="topic-navigation" class="space-y-1.5">
+                    <!-- Senarai topik akan dijana secara dinamik oleh JavaScript -->
+                </nav>
+            </div>
+
+            <!-- ARAHAN UTAMA KOTAK INFO -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-900/90 border border-sky-500/20 rounded-2xl p-4 text-xs space-y-2 shadow-lg">
+                <h3 class="font-bold text-sky-300 flex items-center gap-1.5 text-sm">
+                    <i class="fa-solid fa-compass"></i> Panduan Murid
+                </h3>
+                <ul class="space-y-1 text-slate-300 text-[11px] font-medium leading-relaxed">
+                    <li class="flex items-center gap-1.5"><span>📚</span> 1. Lihat contoh buku teks.</li>
+                    <li class="flex items-center gap-1.5"><span>✍️</span> 2. Taip semula kod sendiri.</li>
+                    <li class="flex items-center gap-1.5"><span>▶️</span> 3. Jalankan kod & semak output.</li>
+                    <li class="flex items-center gap-1.5"><span>🔍</span> 4. Pastikan syarat semakan lengkap.</li>
+                    <li class="flex items-center gap-1.5"><span>💡</span> 5. Gunakan hint jika perlu.</li>
+                    <li class="flex items-center gap-1.5"><span>🏆</span> 6. Selesaikan semua 9 topik!</li>
+                </ul>
+                <div class="pt-2 border-t border-slate-800/80 text-[10px] text-amber-300/90 flex items-start gap-1 font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400 mt-0.5"></i>
+                    <span>Jangan copy kod contoh. Taip sendiri untuk menguasai struktur HTML.</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- BAHAGIAN UTAMA WORKSPACE -->
+        <main class="lg:col-span-9 space-y-6 flex flex-col">
+
+            <!-- KOTAK TAJUK & DESKRIPSI TOPIK -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
+                    <i class="fa-solid fa-code text-9xl text-white"></i>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                    <div class="flex items-center space-x-2">
+                        <span id="topic-badge-num" class="bg-sky-500/20 text-sky-300 text-xs font-bold px-3 py-1 rounded-lg border border-sky-500/30">Topik 1</span>
+                        <h2 id="topic-title" class="text-xl font-extrabold text-white">4.2.3 Paragraph dan Headings</h2>
+                    </div>
+                    <div id="topic-status-pill" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Belum selesai
+                    </div>
+                </div>
+                <p id="topic-description" class="text-xs text-slate-300 leading-relaxed max-w-3xl">
+                    Objektif pembelajaran untuk topik ini...
+                </p>
+            </div>
+
+            <!-- CONTOH BUKU TEKS (PROTECTED NO COPY) -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                    <h3 class="font-bold text-sm text-sky-400 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open"></i> 📖 Contoh Buku Teks
+                    </h3>
+                    <span class="text-[10px] text-amber-400/90 font-medium bg-amber-950/40 px-2.5 py-1 rounded-md border border-amber-500/30 flex items-center gap-1">
+                        <i class="fa-solid fa-lock text-xs"></i> Salin Kod Dilarang (Taip Semula)
+                    </span>
+                </div>
+
+                <!-- Display Code Area with No Select & Event Blocking -->
+                <div id="textbook-example-box" 
+                     class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 font-mono text-xs text-slate-300 leading-relaxed no-select overflow-x-auto relative"
+                     oncontextmenu="return false;"
+                     oncopy="return false;"
+                     oncut="return false;">
+                    <pre id="textbook-code-content" class="select-none">
+<html>
+<head>
+    <title>Contoh</title>
+</head>
+<body>
+
+    <h1>Tajuk Utama</h1>
+    <p>Ini ialah contoh paragraph.</p>
+
+</body>
+</html></pre>
+                </div>
+
+                <div class="text-[11px] text-slate-400 flex items-center gap-2 italic">
+                    <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                    <span>💡 Contoh ini untuk rujukan sahaja. Taip semula kod tersebut di ruang editor di bawah.</span>
+                </div>
+            </div>
+
+            <!-- PANEL CIRI KHAS GAMBAR KUCING (Topic 5 & Topic 7) -->
+            <div id="cat-feature-panel" class="hidden bg-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="font-bold text-sm text-indigo-300 flex items-center gap-2">
+                        <span>🐱</span> Pilih Gambar Kucing Untuk Tugasan Anda
+                    </h3>
+                    <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">
+                        Bahan Rujukan URL Imej
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300">
+                    Klik mana-mana gambar di bawah untuk menyemak preview dan menyalin URL gambar sebagai nilai atribut <code class="bg-slate-800 px-1 py-0.5 rounded text-indigo-300 font-mono">src</code>:
+                </p>
+
+                <!-- Grid Gambar Kucing -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5" id="cat-images-grid">
+                    <!-- Cat items generated dynamically -->
+                </div>
+
+                <!-- Preview URL Kucing Terpilih -->
+                <div id="cat-selected-info" class="hidden bg-slate-950 border border-indigo-500/20 rounded-xl p-3 text-xs space-y-1.5">
+                    <div class="flex items-center justify-between text-indigo-300 font-semibold">
+                        <span id="cat-selected-name">🐱 Kucing 1 Selected</span>
+                        <span class="text-[10px] text-slate-400">Gunakan URL ini dalam atribut src</span>
+                    </div>
+                    <div class="bg-slate-900 p-2 rounded border border-slate-800 font-mono text-[11px] text-sky-300 break-all select-all" id="cat-selected-url">
+                        https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDITOR MURID -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                    <h3 class="font-bold text-sm text-sky-400 flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> ✍️ Taip Kod Anda
+                    </h3>
+                    <div class="text-[11px] text-slate-400 font-mono">
+                        Taip kod lengkap bermula &lt;html&gt; hingga &lt;/html&gt;
+                    </div>
+                </div>
+
+                <!-- Editor Input Area -->
+                <div class="relative">
+                    <textarea id="student-editor" 
+                              class="code-textarea w-full h-56 bg-slate-950 text-sky-200 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 focus:outline-none transition leading-relaxed resize-y"
+                              placeholder="Taip kod HTML lengkap di sini..."
+                              spellcheck="false"
+                              oninput="onStudentInput()"></textarea>
+                </div>
+
+                <!-- Buttons Toolbar -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="runStudentCode()" class="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold px-5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-sky-500/20 transition active:scale-95">
+                            <i class="fa-solid fa-play"></i>
+                            <span>▶ Jalankan Kod</span>
+                        </button>
+                        <button onclick="resetCurrentCode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-700">
+                            <i class="fa-solid fa-rotate-left text-slate-400"></i>
+                            <span>↻ Reset Kod</span>
+                        </button>
+                    </div>
+
+                    <div id="run-feedback-tag" class="text-xs font-medium text-slate-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-info-circle text-sky-400"></i>
+                        <span>Tekan "Jalankan Kod" untuk semakan & paparan output</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OUTPUT PREVIEW -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                    <h3 class="font-bold text-sm text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-desktop"></i> 🖥️ Output Laman Web
+                    </h3>
+                    <span class="text-[10px] text-slate-400 font-mono">Live Preview Frame</span>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden border border-slate-700 h-64 relative shadow-inner">
+                    <iframe id="output-frame" title="Output Preview" class="w-full h-full bg-white"></iframe>
+                </div>
+            </div>
+
+            <!-- SEMAKAN AUTOMATIK DUAL-ENGINE -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="font-bold text-sm text-indigo-300 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i> 🔍 Semakan Kelayakan Topik
+                    </h3>
+                    <div id="check-summary-badge" class="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 font-bold border border-slate-700">
+                        Belum Diumpankan
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- A. Semakan Struktur Asas HTML -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2.5">
+                        <h4 class="font-bold text-xs text-sky-400 flex items-center gap-1.5 border-b border-slate-800/80 pb-2">
+                            <i class="fa-solid fa-cubes"></i> A. Struktur Asas HTML
+                        </h4>
+                        <ul class="space-y-1.5 text-xs text-slate-300" id="checklist-structure">
+                            <!-- Checklist structure items inserted by JS -->
+                        </ul>
+                    </div>
+
+                    <!-- B. Semakan Keperluan Topik Khusus -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2.5">
+                        <h4 class="font-bold text-xs text-indigo-400 flex items-center gap-1.5 border-b border-slate-800/80 pb-2">
+                            <i class="fa-solid fa-vial"></i> B. Keperluan Khusus Topik
+                        </h4>
+                        <ul class="space-y-1.5 text-xs text-slate-300" id="checklist-topic">
+                            <!-- Checklist topic items inserted by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Banner Feedback Keputusan -->
+                <div id="evaluation-alert" class="hidden p-4 rounded-xl border text-xs font-semibold flex items-start gap-3">
+                    <!-- Dynamic evaluation alert -->
+                </div>
+            </div>
+
+            <!-- SISTEM HINT / PETUNJUK -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-sm text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i> 💡 Petunjuk & Hint Pembelajaran
+                    </h3>
+                    <button onclick="toggleHintLevel()" id="btn-next-hint" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-unlock text-xs"></i>
+                        <span id="hint-btn-text">Buka Hint 1</span>
+                    </button>
+                </div>
+
+                <div id="hint-display-box" class="bg-slate-950 border border-amber-500/20 rounded-xl p-4 text-xs text-amber-200/90 leading-relaxed space-y-2">
+                    <p class="text-slate-400 italic">Tekan butang di atas jika anda memerlukan petunjuk langkah demi langkah tanpa memberikan jawapan penuh.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL SIJIL PENCAPAAN -->
+    <div id="certificate-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-sky-500/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative space-y-6 text-center">
+            
+            <button onclick="closeCertModal()" class="no-print absolute top-4 right-4 bg-slate-800 text-slate-400 hover:text-white rounded-full w-8 h-8 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Certificate Decorative Card -->
+            <div class="bg-gradient-to-b from-slate-950 to-slate-900 border-4 border-amber-400/40 p-8 rounded-2xl space-y-4 shadow-2xl relative">
+                <div class="flex justify-center">
+                    <div class="bg-gradient-to-tr from-amber-400 to-yellow-200 text-slate-950 p-4 rounded-full shadow-lg">
+                        <i class="fa-solid fa-award text-4xl"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 tracking-wide uppercase">SIJIL PENGUASAAN HTML</h2>
+                    <p class="text-xs text-slate-400">ASK Tingkatan 1 – Kelas 1 Amanah</p>
+                </div>
+
+                <p class="text-xs text-slate-300">Dengan ini disahkan bahawa murid:</p>
+                
+                <div class="text-xl font-bold text-sky-300 underline decoration-sky-500 decoration-2 underline-offset-4 py-1" id="cert-student-name">
+                    [Nama Murid]
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
+                    Telah berjaya menyelesaikan kesemua <strong class="text-amber-300">9 Topik Kod Arahan HTML (4.2)</strong> secara praktikal dengan menaip struktur HTML lengkap bermula <code class="text-sky-300">&lt;html&gt;</code> hingga <code class="text-sky-300">&lt;/html&gt;</code>.
+                </p>
+
+                <div class="pt-4 flex items-center justify-between border-t border-slate-800 text-[10px] text-slate-400">
+                    <div>
+                        <span>Tarikh Selesai:</span> <span id="cert-date" class="text-slate-200 font-semibold">01/10/2026</span>
+                    </div>
+                    <div>
+                        <span>Status Validation:</span> <span class="text-emerald-400 font-semibold">100% Verified</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex justify-center gap-3 no-print">
+                <button onclick="window.print()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition">
+                    <i class="fa-solid fa-print"></i> Cetak Sijil
+                </button>
+                <button onclick="closeCertModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-6 py-2.5 rounded-xl text-xs transition border border-slate-700">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. DATA KURIKULUM TOPIK (4.2.3 - 4.2.8) BUKU TEKS ASK TINGKATAN 1
+           ========================================================================== */
+        const TOPICS = [
+            {
+                id: "4.2.3",
+                title: "4.2.3 Paragraph dan Headings",
+                subtitle: "Penulisan Perenggan dan Tajuk dalam HTML",
+                desc: "Murid mempelajari cara memasukkan tajuk utama menggunakan tag heading (<h1> - <h6>) serta perenggan menggunakan tag <p>.",
+                textbookCode: `<html>
+<head>
+    <title>Paragraph dan Headings</title>
+</head>
+<body>
+
+    <h1>Tajuk Utama Sekolah</h1>
+    <h2>Sub Tajuk Aktiviti</h2>
+    <p>Selamat datang ke laman web sains komputer Tingkatan 1 Amanah.</p>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Apakah tag yang digunakan untuk memasukkan tajuk dan perenggan?",
+                    "Hint 2: Gunakan tag <h1> atau <h2> untuk tajuk, dan tag <p> untuk perenggan.",
+                    "Hint 3: Pastikan semua tag seperti <h1> dan <p> ditutup semula dengan </h1> dan </p> di dalam <body>."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasHeading = /<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/i.test(code);
+                        const hasParagraph = /<p[^>]*>[\s\S]*?<\/p>/i.test(code);
+                        return {
+                            passed: hasHeading && hasParagraph,
+                            details: [
+                                { text: "Memasukkan tag heading (<h1>, <h2>, dll)", status: hasHeading },
+                                { text: "Memasukkan tag perenggan (<p>...</p>)", status: hasParagraph }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.4-banner",
+                title: "4.2.4 Banner",
+                subtitle: "Membuat Sepanduk Laman Web",
+                desc: "Murid mempelajari cara mereka bentuk bahagian banner utama pada laman web untuk menunjukkan tajuk utama atau nama laman web.",
+                textbookCode: `<html>
+<head>
+    <title>Banner Laman Web</title>
+</head>
+<body>
+
+    <div style="background-color: navy; color: white; text-align: center; padding: 20px;">
+        <h1>SELAMAT DATANG KE KELAS 1 AMANAH</h1>
+    </div>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Apakah elemen atau tag yang biasa digunakan untuk membina bekas banner?",
+                    "Hint 2: Anda boleh menggunakan <div> dengan kemasan tajuk <h1> di dalamnya.",
+                    "Hint 3: Pastikan bahagian banner terletak dalam tag <body>...</body>."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasDivOrHeader = /<(div|header)[^>]*>[\s\S]*?<\/(div|header)>/i.test(code) || /<h1[^>]*>[\s\S]*?<\/h1>/i.test(code);
+                        const hasBannerText = code.length > 50;
+                        return {
+                            passed: hasDivOrHeader && hasBannerText,
+                            details: [
+                                { text: "Elemen bekas banner (<div> atau <header> atau <h1>)", status: hasDivOrHeader },
+                                { text: "Kandungan teks tajuk banner lengkap", status: hasBannerText }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.4-frame",
+                title: "4.2.4 Frame",
+                subtitle: "Penggunaan Frame dalam HTML",
+                desc: "Murid mempelajari cara membina bingkai laman web (frame/iframe) untuk memaparkan dokumen berasingan.",
+                textbookCode: `<html>
+<head>
+    <title>Frame Laman Web</title>
+</head>
+<body>
+
+    <iframe src="about:blank" width="100%" height="200">
+        <p>Browser anda tidak menyokong frame.</p>
+    </iframe>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Apakah tag yang digunakan untuk memasukkan frame dalam laman web?",
+                    "Hint 2: Gunakan tag <iframe> dengan atribut src dan width/height.",
+                    "Hint 3: Jangan lupa menutup tag dengan </iframe> di dalam <body>."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasIframe = /<iframe[^>]*src=["'][^"']*["'][^>]*>[\s\S]*?<\/iframe>/i.test(code) || /<frameset[^>]*>/i.test(code);
+                        return {
+                            passed: hasIframe,
+                            details: [
+                                { text: "Elemen frame (<iframe>...</iframe> atau <frameset>)", status: hasIframe }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.4-menu",
+                title: "4.2.4 Menu",
+                subtitle: "Membuat Menu Navigasi",
+                desc: "Murid mempelajari cara membina senarai menu navigasi untuk pautan pilihan laman web.",
+                textbookCode: `<html>
+<head>
+    <title>Menu Navigasi</title>
+</head>
+<body>
+
+    <h3>Menu Utama</h3>
+    <ul>
+        <li><a href="#utama">Utama</a></li>
+        <li><a href="#profil">Profil</a></li>
+        <li><a href="#galeri">Galeri</a></li>
+    </ul>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Apakah tag senarai yang digunakan untuk menu navigasi?",
+                    "Hint 2: Gunakan tag <ul> dan <li> atau siri tag pautan <a> untuk pilihan menu.",
+                    "Hint 3: Pastikan sekurang-kurangnya 2 item menu dimasukkan."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasList = (/<ul[^>]*>[\s\S]*?<\/ul>/i.test(code) && (code.match(/<li[^>]*>/gi) || []).length >= 2) || (code.match(/<a[^>]*href/gi) || []).length >= 2;
+                        return {
+                            passed: hasList,
+                            details: [
+                                { text: "Struktur menu (<ul>/<li> atau sekurang-kurangnya 2 pautan)", status: hasList }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.5-pautan-teks",
+                title: "4.2.5 Pautan Teks",
+                subtitle: "Membina Pautan Hiperteks (Hyperlink)",
+                desc: "Murid mempelajari cara membina pautan teks menggunakan tag <a> dengan atribut href.",
+                textbookCode: `<html>
+<head>
+    <title>Pautan Teks</title>
+</head>
+<body>
+
+    <p>Klik di sini untuk melawat <a href="https://www.moe.gov.my">Portal KPM</a>.</p>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Tag apakah yang digunakan untuk membina pautan?",
+                    "Hint 2: Tag tersebut ialah <a> dan memerlukan atribut href untuk destinasi pautan.",
+                    "Hint 3: Contoh format: <a href=\"URL\">Teks Pautan</a>."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasAnchor = /<a[^>]+href=["'][^"']+["'][^>]*>[\s\S]+?<\/a>/i.test(code);
+                        return {
+                            passed: hasAnchor,
+                            details: [
+                                { text: "Tag pautan <a href=\"...\">Teks</a> lengkap", status: hasAnchor }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.5-pautan-imej",
+                title: "4.2.5 Pautan Imej",
+                subtitle: "Menjadikan Gambar Sebagai Pautan",
+                desc: "Murid mempelajari cara meletakkan tag <img> di dalam tag <a> supaya imej boleh diklik sebagai pautan.",
+                textbookCode: `<html>
+<head>
+    <title>Pautan Imej</title>
+</head>
+<body>
+
+    <p>Klik gambar di bawah untuk ke pautan:</p>
+    <a href="https://www.google.com">
+        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300" width="150" alt="Kucing Comel">
+    </a>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Bagaimanakah cara membuat imej yang boleh diklik?",
+                    "Hint 2: Letakkan tag <img> di dalam tag <a href=\"...\">...</a>.",
+                    "Hint 3: Gunakan panel 'Pilih Gambar Kucing' di atas untuk mendapatkan URL imej."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasImageAnchor = /<a[^>]+href=["'][^"']+["'][^>]*>[\s\S]*?<img[^>]+src=["'][^"']+["'][^>]*>[\s\S]*?<\/a>/i.test(code);
+                        return {
+                            passed: hasImageAnchor,
+                            details: [
+                                { text: "Tag <img> terletak di dalam tag <a href=\"...\">", status: hasImageAnchor }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.6-imej",
+                title: "4.2.6 Memasukkan Imej",
+                subtitle: "Memasukkan Gambar dan Atribut Imej",
+                desc: "Murid mempelajari cara memasukkan imej menggunakan tag <img> bersama atribut src, alt, width dan height.",
+                textbookCode: `<html>
+<head>
+    <title>Memasukkan Imej</title>
+</head>
+<body>
+
+    <h1>Koleksi Gambar Saya</h1>
+    <img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=300" alt="Kucing Hitam" width="200" height="150">
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Apakah tag yang digunakan untuk memasukkan gambar?",
+                    "Hint 2: Gunakan tag <img> bersama atribut src dan alt.",
+                    "Hint 3: Anda boleh memilih gambar daripada panel 'Pilih Gambar Kucing' di atas untuk menyalin URL src."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasImg = /<img[^>]+src=["'][^"']+["'][^>]*>/i.test(code);
+                        const hasAlt = /<img[^>]+alt=["'][^"']+["'][^>]*>/i.test(code);
+                        return {
+                            passed: hasImg && hasAlt,
+                            details: [
+                                { text: "Tag <img> dengan atribut src", status: hasImg },
+                                { text: "Atribut alt dimasukkan pada imej", status: hasAlt }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.7-pull-down",
+                title: "4.2.7 Pull Down Menu",
+                subtitle: "Membuat Senarai Pilihan (Dropdown)",
+                desc: "Murid mempelajari cara membina menu pilihan tetingkap susun bawah (pull-down menu) menggunakan tag <select> dan <option>.",
+                textbookCode: `<html>
+<head>
+    <title>Pull Down Menu</title>
+</head>
+<body>
+
+    <h3>Pilih Hobi Anda:</h3>
+    <select name="hobi">
+        <option value="membaca">Membaca Buku</option>
+        <option value="sukan">Bermain Sukan</option>
+        <option value="kod">Menaip Kod HTML</option>
+    </select>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Tag apakah yang digunakan untuk membina pull-down menu?",
+                    "Hint 2: Gunakan tag <select> untuk bekas dropdown dan tag <option> untuk setiap pilihan.",
+                    "Hint 3: Masukkan sekurang-kurangnya dua tag <option>...</option> di dalam <select>."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasSelect = /<select[^>]*>[\s\S]*?<\/select>/i.test(code);
+                        const optionCount = (code.match(/<option[^>]*>[\s\S]*?<\/option>/gi) || []).length;
+                        const passed = hasSelect && optionCount >= 2;
+                        return {
+                            passed: passed,
+                            details: [
+                                { text: "Elemen <select>...</select>", status: hasSelect },
+                                { text: "Sekurang-kurangnya 2 tag <option>", status: optionCount >= 2 }
+                            ]
+                        };
+                    }
+                }
+            },
+            {
+                id: "4.2.8-komen",
+                title: "4.2.8 Ruang Komen",
+                subtitle: "Membina Borang Ruang Komen",
+                desc: "Murid mempelajari cara membina borang maklum balas dengan ruang komen berbilang baris menggunakan <textarea> dan butang hantar.",
+                textbookCode: `<html>
+<head>
+    <title>Ruang Komen</title>
+</head>
+<body>
+
+    <h3>Hantar Komen Anda:</h3>
+    <form action="#">
+        <p>Komen:</p>
+        <textarea rows="4" cols="50" placeholder="Tulis komen anda di sini..."></textarea><br>
+        <input type="submit" value="Hantar Komen">
+    </form>
+
+</body>
+</html>`,
+                hints: [
+                    "Hint 1: Elemen borang apakah yang digunakan untuk ruang komen berbilang baris?",
+                    "Hint 2: Gunakan tag <textarea>...</textarea> di dalam borang <form>.",
+                    "Hint 3: Sediakan butang hantar dengan <input type=\"submit\"> atau <button>."
+                ],
+                checkRules: {
+                    structureTags: ['html', 'head', 'title', 'body'],
+                    topicCheck: (code) => {
+                        const hasForm = /<form[^>]*>[\s\S]*?<\/form>/i.test(code);
+                        const hasTextarea = /<textarea[^>]*>[\s\S]*?<\/textarea>/i.test(code);
+                        const hasSubmit = /<input[^>]+type=["']submit["']/i.test(code) || /<button[^>]*>[\s\S]*?<\/button>/i.test(code);
+                        const passed = hasForm && hasTextarea && hasSubmit;
+                        return {
+                            passed: passed,
+                            details: [
+                                { text: "Borang <form>...</form>", status: hasForm },
+                                { text: "Elemen ruang komen <textarea>", status: hasTextarea },
+                                { text: "Butang hantar (<input type=\"submit\"> atau <button>)", status: hasSubmit }
+                            ]
+                        };
+                    }
+                }
+            }
+        ];
+
+        /* ==========================================================================
+           2. GAMBAR KUCING REAL ASSETS (Topik 5 & 7)
+           ========================================================================== */
+        const CAT_IMAGES = [
+            { id: 1, name: "🐱 Kucing 1 (Oren Comel)", url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400" },
+            { id: 2, name: "🐱 Kucing 2 (Kucing Spek)", url: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=400" },
+            { id: 3, name: "🐱 Kucing 3 (Kucing Hitam)", url: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400" },
+            { id: 4, name: "🐱 Kucing 4 (Kucing Kelabu)", url: "https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=400" },
+            { id: 5, name: "🐱 Kucing 5 (Kucing Tidur)", url: "https://images.unsplash.com/photo-1561948955-570b270e7c36?w=400" }
+        ];
+
+        /* ==========================================================================
+           3. APPLIKASI STATE ENGINE & LOCALSTORAGE
+           ========================================================================== */
+        let state = {
+            studentName: "",
+            currentTopicIndex: 0,
+            topicStatus: {}, // 'not-started', 'in-progress', 'completed'
+            savedCodes: {},  // { topicIndex: "string code" }
+            hintLevel: {}    // { topicIndex: number }
+        };
+
+        const STORAGE_KEY = "html_code_lab_ask_1amanah_v2";
+
+        window.onload = function() {
+            loadState();
+            renderTopicNavigation();
+            loadTopic(state.currentTopicIndex);
+            setupCopyProtection();
+            renderCatGrid();
+        };
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            updateGlobalProgressUI();
+        }
+
+        function loadState() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    state = { ...state, ...parsed };
+                } catch(e) {
+                    console.error("Gagal membaca localStorage", e);
+                }
+            }
+
+            // Inisialisasi status jika kosong
+            TOPICS.forEach((t, idx) => {
+                if (!state.topicStatus[idx]) {
+                    state.topicStatus[idx] = 'not-started';
+                }
+                if (state.savedCodes[idx] === undefined) {
+                    state.savedCodes[idx] = "";
+                }
+                if (state.hintLevel[idx] === undefined) {
+                    state.hintLevel[idx] = 0;
+                }
+            });
+
+            document.getElementById('student-name').value = state.studentName || "";
+            updateGlobalProgressUI();
+        }
+
+        function saveStudentName(name) {
+            state.studentName = name;
+            saveState();
+        }
+
+        /* ==========================================================================
+           4. NAVIGASI TOPIK & SIDEBAR UI
+           ========================================================================== */
+        function renderTopicNavigation() {
+            const nav = document.getElementById('topic-navigation');
+            nav.innerHTML = "";
+
+            TOPICS.forEach((topic, idx) => {
+                const status = state.topicStatus[idx] || 'not-started';
+                const isActive = idx === state.currentTopicIndex;
+
+                let statusBadge = "";
+                if (status === 'completed') {
+                    statusBadge = `<span class="text-xs text-emerald-400 font-semibold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>🟢 Selesai</span>`;
+                } else if (status === 'in-progress') {
+                    statusBadge = `<span class="text-xs text-amber-400 font-semibold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>🟡 Sedang dibuat</span>`;
+                } else {
+                    statusBadge = `<span class="text-xs text-slate-500 font-semibold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500/80"></span>🔴 Belum selesai</span>`;
+                }
+
+                const btn = document.createElement('button');
+                btn.onclick = () => switchTopic(idx);
+                btn.className = `w-full text-left p-3 rounded-xl transition border text-xs font-medium flex flex-col gap-1 ${
+                    isActive 
+                    ? 'bg-sky-950/60 border-sky-500/50 shadow-md ring-1 ring-sky-500/30' 
+                    : 'bg-slate-950/40 hover:bg-slate-800/60 border-slate-800 text-slate-300'
+                }`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="font-bold text-slate-200">${topic.id}</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="text-[11px] text-slate-400 truncate">${topic.title.replace(/^[0-9.]+\s*/, '')}</div>
+                `;
+                nav.appendChild(btn);
+            });
+        }
+
+        function switchTopic(index) {
+            // Simpan kod semasa sebelum bertukar
+            const currentCode = document.getElementById('student-editor').value;
+            state.savedCodes[state.currentTopicIndex] = currentCode;
+
+            state.currentTopicIndex = index;
+            saveState();
+
+            renderTopicNavigation();
+            loadTopic(index);
+        }
+
+        /* ==========================================================================
+           5. MEMUATKAN KANDUNGAN TOPIK KE WORKSPACE
+           ========================================================================== */
+        function loadTopic(index) {
+            const topic = TOPICS[index];
+
+            document.getElementById('topic-badge-num').innerText = `Topik ${index + 1} dari 9`;
+            document.getElementById('topic-title').innerText = topic.title;
+            document.getElementById('topic-description').innerText = `${topic.subtitle} - ${topic.desc}`;
+
+            // Set Textbook code (Strict Copy Protected)
+            document.getElementById('textbook-code-content').textContent = topic.textbookCode;
+
+            // Set Editor Code (Must start empty if no saved code exists)
+            const savedCode = state.savedCodes[index] || "";
+            const editor = document.getElementById('student-editor');
+            editor.value = savedCode;
+
+            // Handle Cat Feature visibility (Only for Topic 5 & 7)
+            const catPanel = document.getElementById('cat-feature-panel');
+            if (topic.id === "4.2.5-pautan-imej" || topic.id === "4.2.6-imej") {
+                catPanel.classList.remove('hidden');
+            } else {
+                catPanel.classList.add('hidden');
+            }
+
+            // Update status pill header
+            updateTopicStatusPill(state.topicStatus[index]);
+
+            // Reset hint display
+            renderHintDisplay();
+
+            // Run validation once if code exists
+            if (savedCode.trim().length > 0) {
+                runStudentCode(false); // don't show alert modal on auto-load
+            } else {
+                clearChecklists();
+                clearOutputFrame();
+            }
+        }
+
+        function updateTopicStatusPill(status) {
+            const pill = document.getElementById('topic-status-pill');
+            if (status === 'completed') {
+                pill.className = "inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-500/30";
+                pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> 🟢 Selesai`;
+            } else if (status === 'in-progress') {
+                pill.className = "inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-amber-950/60 text-amber-300 border border-amber-500/30";
+                pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 🟡 Sedang dibuat`;
+            } else {
+                pill.className = "inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
+                pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> 🔴 Belum selesai`;
+            }
+        }
+
+        function onStudentInput() {
+            const idx = state.currentTopicIndex;
+            const code = document.getElementById('student-editor').value;
+            state.savedCodes[idx] = code;
+
+            if (code.trim().length > 0 && state.topicStatus[idx] !== 'completed') {
+                state.topicStatus[idx] = 'in-progress';
+                updateTopicStatusPill('in-progress');
+                renderTopicNavigation();
+            }
+            saveState();
+        }
+
+        function resetCurrentCode() {
+            const idx = state.currentTopicIndex;
+            document.getElementById('student-editor').value = "";
+            state.savedCodes[idx] = "";
+            if (state.topicStatus[idx] !== 'completed') {
+                state.topicStatus[idx] = 'not-started';
+            }
+            saveState();
+            renderTopicNavigation();
+            loadTopic(idx);
+        }
+
+        /* ==========================================================================
+           6. CIRI KHAS GAMBAR KUCING (Topic 5 & Topic 7)
+           ========================================================================== */
+        function renderCatGrid() {
+            const grid = document.getElementById('cat-images-grid');
+            grid.innerHTML = "";
+
+            CAT_IMAGES.forEach((cat) => {
+                const item = document.createElement('div');
+                item.className = "bg-slate-950 border border-slate-800 hover:border-indigo-500/60 rounded-xl p-2 cursor-pointer transition flex flex-col items-center gap-1.5 text-center group";
+                item.onclick = () => selectCatImage(cat);
+
+                item.innerHTML = `
+                    <div class="w-full h-16 bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+                        <img src="${cat.url}" alt="${cat.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy">
+                    </div>
+                    <span class="text-[10px] font-semibold text-slate-300 group-hover:text-indigo-300 truncate w-full">${cat.name}</span>
+                `;
+                grid.appendChild(item);
+            });
+        }
+
+        function selectCatImage(cat) {
+            const infoBox = document.getElementById('cat-selected-info');
+            infoBox.classList.remove('hidden');
+            document.getElementById('cat-selected-name').innerText = cat.name;
+            document.getElementById('cat-selected-url').innerText = cat.url;
+        }
+
+        /* ==========================================================================
+           7. AUTOMATED EVALUATION & DUAL CHECKING ENGINE
+           ========================================================================== */
+        function runStudentCode(triggerUserNotice = true) {
+            const idx = state.currentTopicIndex;
+            const topic = TOPICS[idx];
+            const code = document.getElementById('student-editor').value;
+
+            // Render Output Preview in iframe
+            const iframe = document.getElementById('output-frame');
+            iframe.srcdoc = code;
+
+            // 1. Semakan Structure Asas HTML (Non-DOCTYPE, Strict Tag Balance)
+            const structResult = checkBasicHTMLStructure(code);
+
+            // 2. Semakan Keperluan Topik Khusus
+            const topicResult = topic.checkRules.topicCheck(code);
+
+            // Update Checklist UI
+            renderChecklists(structResult, topicResult);
+
+            const isPassed = structResult.allPassed && topicResult.passed;
+
+            const alertBox = document.getElementById('evaluation-alert');
+            alertBox.classList.remove('hidden');
+
+            if (isPassed) {
+                state.topicStatus[idx] = 'completed';
+                updateTopicStatusPill('completed');
+                
+                alertBox.className = "p-4 rounded-xl border border-emerald-500/40 bg-emerald-950/50 text-emerald-200 text-xs font-semibold flex items-start gap-3 shadow-lg";
+                alertBox.innerHTML = `
+                    <div class="bg-emerald-500 text-slate-950 p-1.5 rounded-lg text-lg"><i class="fa-solid fa-circle-check"></i></div>
+                    <div>
+                        <div class="text-sm font-bold text-emerald-300">🎉 Tahniah! Anda telah melengkapkan topik ini dengan betul!</div>
+                        <p class="text-[11px] text-emerald-200/80 mt-0.5">Semua struktur HTML lengkap dan syarat topik telah dipenuhi. Progress anda telah diperkemas.</p>
+                    </div>
+                `;
+
+                document.getElementById('check-summary-badge').className = "text-xs px-2.5 py-1 rounded-md bg-emerald-950 text-emerald-400 font-bold border border-emerald-500/30";
+                document.getElementById('check-summary-badge').innerText = "🟢 SYARAT DILENGKAPI";
+
+            } else {
+                if (state.topicStatus[idx] !== 'completed') {
+                    state.topicStatus[idx] = 'in-progress';
+                    updateTopicStatusPill('in-progress');
+                }
+
+                alertBox.className = "p-4 rounded-xl border border-amber-500/40 bg-amber-950/50 text-amber-200 text-xs font-semibold flex items-start gap-3 shadow-lg";
+                alertBox.innerHTML = `
+                    <div class="bg-amber-500 text-slate-950 p-1.5 rounded-lg text-lg"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div>
+                        <div class="text-sm font-bold text-amber-300">⚠️ Kod HTML anda belum lengkap sepenuhnya.</div>
+                        <p class="text-[11px] text-amber-200/80 mt-0.5">Sila semak senarai tanda semak di bawah. Pastikan struktur HTML lengkap dari &lt;html&gt; hingga &lt;/html&gt; dan elemen topik dimasukkan.</p>
+                    </div>
+                `;
+
+                document.getElementById('check-summary-badge').className = "text-xs px-2.5 py-1 rounded-md bg-amber-950 text-amber-300 font-bold border border-amber-500/30";
+                document.getElementById('check-summary-badge').innerText = "🟡 BELUM LENGKAP";
+            }
+
+            saveState();
+            renderTopicNavigation();
+
+            // Semak jika semua 9 topik telah selesai
+            checkOverallCompletion();
+        }
+
+        /* Semakan Struktur Asas HTML mengikut keperluan latihan */
+        function checkBasicHTMLStructure(code) {
+            const hasHtmlOpen = /<html[^>]*>/i.test(code);
+            const hasHtmlClose = /<\/html>/i.test(code);
+            
+            const hasHeadOpen = /<head[^>]*>/i.test(code);
+            const hasHeadClose = /<\/head>/i.test(code);
+            
+            const hasTitleOpen = /<title[^>]*>/i.test(code);
+            const hasTitleClose = /<\/title>/i.test(code);
+
+            const hasBodyOpen = /<body[^>]*>/i.test(code);
+            const hasBodyClose = /<\/body>/i.test(code);
+
+            // Semakan susunan asas: head di dalam html, body selepas head
+            const orderValid = code.search(/<html/i) < code.search(/<head/i) &&
+                               code.search(/<\/head>/i) < code.search(/<body/i) &&
+                               code.search(/<\/body>/i) <= code.search(/<\/html>/i);
+
+            const checks = [
+                { text: "Tag pembuka <html> dan penutup </html>", status: hasHtmlOpen && hasHtmlClose },
+                { text: "Tag pembuka <head> dan penutup </head>", status: hasHeadOpen && hasHeadClose },
+                { text: "Tag pembuka <title> dan penutup </title>", status: hasTitleOpen && hasTitleClose },
+                { text: "Tag pembuka <body> dan penutup </body>", status: hasBodyOpen && hasBodyClose },
+                { text: "Susunan dokumen HTML teratur", status: orderValid }
+            ];
+
+            const allPassed = checks.every(c => c.status);
+            return { allPassed, checks };
+        }
+
+        function renderChecklists(structResult, topicResult) {
+            const structUl = document.getElementById('checklist-structure');
+            structUl.innerHTML = "";
+            structResult.checks.forEach(item => {
+                const li = document.createElement('li');
+                li.className = "flex items-center gap-2";
+                li.innerHTML = item.status 
+                    ? `<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span class="text-slate-200">${item.text}</span>`
+                    : `<i class="fa-solid fa-circle-xmark text-rose-500 text-sm"></i> <span class="text-slate-400">${item.text}</span>`;
+                structUl.appendChild(li);
+            });
+
+            const topicUl = document.getElementById('checklist-topic');
+            topicUl.innerHTML = "";
+            topicResult.details.forEach(item => {
+                const li = document.createElement('li');
+                li.className = "flex items-center gap-2";
+                li.innerHTML = item.status 
+                    ? `<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span class="text-slate-200">${item.text}</span>`
+                    : `<i class="fa-solid fa-circle-xmark text-rose-500 text-sm"></i> <span class="text-slate-400">${item.text}</span>`;
+                topicUl.appendChild(li);
+            });
+        }
+
+        function clearChecklists() {
+            document.getElementById('checklist-structure').innerHTML = `<li class="text-slate-500 italic">Jalankan kod untuk melihat hasil semakan structure.</li>`;
+            document.getElementById('checklist-topic').innerHTML = `<li class="text-slate-500 italic">Jalankan kod untuk melihat hasil semakan topik.</li>`;
+            document.getElementById('evaluation-alert').classList.add('hidden');
+            document.getElementById('check-summary-badge').className = "text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 font-bold border border-slate-700";
+            document.getElementById('check-summary-badge').innerText = "Belum Diumpankan";
+        }
+
+        function clearOutputFrame() {
+            const iframe = document.getElementById('output-frame');
+            iframe.srcdoc = "<html><body style='font-family:sans-serif; color:#94a3b8; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;'><em>Output akan dipaparkan di sini selepas menekan 'Jalankan Kod'</em></body></html>";
+        }
+
+        /* ==========================================================================
+           8. SISTEM HINT / PETUNJUK
+           ========================================================================== */
+        function toggleHintLevel() {
+            const idx = state.currentTopicIndex;
+            let lvl = state.hintLevel[idx] || 0;
+            if (lvl < 3) {
+                lvl += 1;
+                state.hintLevel[idx] = lvl;
+                saveState();
+            } else {
+                state.hintLevel[idx] = 1; // loop back to 1
+                saveState();
+            }
+            renderHintDisplay();
+        }
+
+        function renderHintDisplay() {
+            const idx = state.currentTopicIndex;
+            const topic = TOPICS[idx];
+            const lvl = state.hintLevel[idx] || 0;
+
+            const box = document.getElementById('hint-display-box');
+            const btnText = document.getElementById('hint-btn-text');
+
+            if (lvl === 0) {
+                box.innerHTML = `<p class="text-slate-400 italic">Tekan 'Buka Hint' untuk mendapatkan petunjuk langkah demi langkah tanpa memberikan jawapan penuh.</p>`;
+                btnText.innerText = "Buka Hint 1";
+            } else {
+                let hintsHtml = "";
+                for (let i = 0; i < lvl; i++) {
+                    hintsHtml += `<div class="p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/30 text-amber-200">
+                        <strong class="text-amber-400">Petunjuk ${i + 1}:</strong> ${topic.hints[i]}
+                    </div>`;
+                }
+                box.innerHTML = hintsHtml;
+                if (lvl < 3) {
+                    btnText.innerText = `Buka Hint ${lvl + 1}`;
+                } else {
+                    btnText.innerText = "Ulang Hint 1";
+                }
+            }
+        }
+
+        /* ==========================================================================
+           9. STRUKTUR UTAMA KOD CONTOH TIDAK BOLEH DISALIN (STRICT NO COPY)
+           ========================================================================== */
+        function setupCopyProtection() {
+            const textbookBox = document.getElementById('textbook-example-box');
+
+            // Disable copy, cut, context menu, and select
+            ['copy', 'cut', 'contextmenu', 'dragstart'].forEach(evt => {
+                textbookBox.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    showCopyBlockedToast();
+                    return false;
+                });
+            });
+
+            // Prevent Ctrl+C or Cmd+C when focus or mouse over textbook box
+            textbookBox.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                    e.preventDefault();
+                    showCopyBlockedToast();
+                    return false;
+                }
+            });
+        }
+
+        function showCopyBlockedToast() {
+            const alertTag = document.getElementById('run-feedback-tag');
+            alertTag.innerHTML = `<span class="text-amber-400 font-bold"><i class="fa-solid fa-lock"></i> Kod contoh tidak boleh disalin! Sila taip semula di editor.</span>`;
+            setTimeout(() => {
+                alertTag.innerHTML = `<i class="fa-solid fa-info-circle text-sky-400"></i> Tekan "Jalankan Kod" untuk semakan & paparan output`;
+            }, 3500);
+        }
+
+        /* ==========================================================================
+           10. PROGRESS KESELURUHAN & RESET SYSTEM
+           ========================================================================== */
+        function updateGlobalProgressUI() {
+            let completedCount = 0;
+            TOPICS.forEach((_, idx) => {
+                if (state.topicStatus[idx] === 'completed') {
+                    completedCount++;
+                }
+            });
+
+            const percent = Math.round((completedCount / TOPICS.length) * 100);
+
+            document.getElementById('progress-text-summary').innerText = `${completedCount} / ${TOPICS.length} Topik Selesai`;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+        }
+
+        function checkOverallCompletion() {
+            let completedCount = 0;
+            TOPICS.forEach((_, idx) => {
+                if (state.topicStatus[idx] === 'completed') {
+                    completedCount++;
+                }
+            });
+
+            if (completedCount === TOPICS.length) {
+                setTimeout(() => {
+                    openCertModal();
+                }, 800);
+            }
+        }
+
+        function resetAllProgress() {
+            const confirmed = confirm("Adakah anda pasti mahu reset semua progress? Semua status topik dan kod tersimpan akan dikosongkan.");
+            if (confirmed) {
+                state.topicStatus = {};
+                state.savedCodes = {};
+                state.hintLevel = {};
+                TOPICS.forEach((_, idx) => {
+                    state.topicStatus[idx] = 'not-started';
+                    state.savedCodes[idx] = "";
+                    state.hintLevel[idx] = 0;
+                });
+                saveState();
+                renderTopicNavigation();
+                loadTopic(state.currentTopicIndex);
+                alert("Progress anda telah berjaya direset.");
+            }
+        }
+
+        function openCertModal() {
+            const name = state.studentName.trim() || "[Nama Murid]";
+            document.getElementById('cert-student-name').innerText = name;
+            
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ms-MY', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('cert-date').innerText = dateStr;
+
+            document.getElementById('certificate-modal').classList.remove('hidden');
+        }
+
+        function closeCertModal() {
+            document.getElementById('certificate-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
